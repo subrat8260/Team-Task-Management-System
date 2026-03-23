@@ -55,13 +55,11 @@ exports.postSignup = async (req, res) => {
   res.json({ message: "User registered successfully" });
 };
 //User Logout
-exports.postLogout = (req, res) => {
-  res.clearCookie("accessToken", (err) => {
-    if (err) {
-      console.error("Error clearing cookie:", err);
-      return res.status(500).json({ message: "Error Logging out" });
-    }
-  });
+exports.postLogout = async (req, res) => {
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  await User.findByIdAndUpdate(req.user._id, { refreshToken: null });
+  res.status(200).json({ message: "Logout successful" });
 };
 
 //refresh Access Token Controller
